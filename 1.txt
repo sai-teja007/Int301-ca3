@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Get the current date in seconds since the epoch
+current_date=$(date +%s)
+
+# Calculate the date 3 months ago in seconds since the epoch
+three_months_ago=$(date -d "-3 months" +%s)
+
+# Loop through all installed packages and check their installation date
+for package in $(dpkg-query -W --showformat='${Package}\n'); do
+# Get the installation date of the package in seconds since the epoch
+install_date=$(stat -c '%Y' "/var/lib/dpkg/info/${package}.list" 2>/dev/null)
+
+# Check if the installation date is within the last 3 months
+if (( install_date > three_months_ago && install_date <= current_date )); then
+humandate=`date -d @$install_date`;
+echo "$package" "$humandate";
+fi
+done | tee file
+
+# Count the number of lines in the file
+wc -l file
