@@ -1,0 +1,15 @@
+#!/bin/bash
+
+sudo apt-get update > /dev/null 2>&1
+
+updated_packages=$(sudo apt-get upgrade -s | awk '/^Inst/ { if ($6 >= "'$(date -d '-3 months' +%Y-%m-%d)'") { print $2, $4 } }')
+
+if [ -n "$updated_packages" ]; then
+echo "Updated packages in the last 3 months:"
+echo "$updated_packages" | while read -r package version; do
+
+echo "- $package ($version) - Updated on: $date"
+done
+else
+echo "No packages were updated in the last 3 months."
+fi
