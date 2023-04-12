@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Set the date range to search for deleted packages
+START_DATE=$(date -d "-3 months" +%Y-%m-%d)
+END_DATE=$(date +%Y-%m-%d)
+
+# Get a list of deleted packages within the date range
+DELETED_PACKAGES=$(sudo grep "remove " /var/log/dpkg.log | awk -v start=$START_DATE -v end=$END_DATE '$1 >= start && $1 <= end { print $4 }' | sort -u)
+
+# Output the list of deleted packages
+echo "Deleted packages between $START_DATE and $END_DATE:"
+echo "$DELETED_PACKAGES"
